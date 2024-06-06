@@ -1,3 +1,4 @@
+import string
 # Cours hippique
 # Version très basique, sans mutex sur l'écran, sans arbitre, sans annoncer le gagant, ... ...
 
@@ -44,7 +45,7 @@ CL_WHITE="\033[01;37m"                  #  Blanc
 #-------------------------------------------------------
 import multiprocessing as mp
 import os, time,math, random, sys, ctypes, signal
-
+chevals = string.ascii_uppercase
 # Une liste de couleurs à affecter aléatoirement aux chevaux
 lyst_colors=[CL_WHITE, CL_RED, CL_GREEN, CL_BROWN , CL_BLUE, CL_MAGENTA, CL_CYAN, CL_GRAY,
              CL_DARKGRAY, CL_LIGHTRED, CL_LIGHTGREEN,  CL_LIGHTBLU, CL_YELLOW, CL_LIGHTMAGENTA, CL_LIGHTCYAN]
@@ -68,14 +69,32 @@ def un_cheval(ma_ligne : int, keep_running) : # ma_ligne commence à 0
         erase_line_from_beg_to_curs()
         en_couleur(lyst_colors[ma_ligne%len(lyst_colors)])
         print('('+chr(ord('A')+ma_ligne)+'>')
-
+        tableau_partage[i] = col
         col+=1
         time.sleep(0.1 * random.randint(1,5))
         
     # Le premier arrivée gèle la course !
-    # J'ai fini, je me dis à tout le monde
+    # J'ai fini, je le dis à tout le monde
     keep_running.value=False
-        
+
+def arbitre():
+    col = 1
+    while col < LONGEUR_COURSE and keep_running.value :
+        move_to(25,1)    
+        erase_line()
+        en_couleur(CL_WHITE)
+        mini = 0
+        maxi = 0
+        for i in range(len(tableau_partage)):
+            if tableau_partage[i] < tableau_partage[mini]:
+                mini = i
+            if tableau_partage[i] > tableau_partage[maxi]:
+                maxi = i
+
+
+
+        print("le dernier est : ", chevals[mini], ", et le premier est : ", chevals[maxi])
+     
 #------------------------------------------------
 def detourner_signal(signum, stack_frame) :
     move_to(24, 1)
@@ -95,7 +114,7 @@ if __name__ == "__main__" :
     LONGEUR_COURSE = 50 # Tout le monde aura la même copie (donc no need to have a 'value')
     keep_running=mp.Value(ctypes.c_bool, True)
      
-    Nb_process=20
+    Nb_process = 20
     mes_process = [0 for i in range(Nb_process)]
     
     
@@ -104,16 +123,30 @@ if __name__ == "__main__" :
     
     # Détournement d'interruption
     signal.signal(signal.SIGINT, detourner_signal) # CTRL_C_EVENT   ?
-
+    tableau_partage = mp.Array('i', Nb_process)
+    tableau_partage[:]= [0 for _ in range(Nb_process) ]
     for i in range(Nb_process):  # Lancer   Nb_process  processus
         mes_process[i] = mp.Process(target=un_cheval, args= (i,keep_running,))
         mes_process[i].start()
 
+
     move_to(Nb_process+10, 1)
     print("tous lancés, CTRL-C arrêtera la course ...")
-
+    process_arbitre = mp.Process(target=arbitre)
+    process_arbitre.start()
     for i in range(Nb_process): mes_process[i].join()
 
-    move_to(24, 1)
+    move_to(21, 1)
     curseur_visible()
     print("Fini ... ", flush=True)
+
+    
+    chevals_gagnants = []
+
+    for i in range(len(tableau_partage)):
+        if tableau_partage[i] == LONGEUR_COURSE-1:
+            chevals_gagnants.append(i)
+
+    for i in chevals_gagnants:
+        print('Le(s) gagnant(s) est/sont :', chevals[i], end=" ")
+        
