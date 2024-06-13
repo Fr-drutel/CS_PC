@@ -95,20 +95,19 @@ def un_cheval(ma_ligne: int, keep_running, mutex): # ma_ligne commence à 0
 def arbitre():
     col = 1
     while col < LONGEUR_COURSE and keep_running.value :
-        move_to(25,1)    
-        erase_line()
-        en_couleur(CL_WHITE)
-        mini = 0
-        maxi = 0
-        for i in range(len(tableau_partage)):
-            if tableau_partage[i] < tableau_partage[mini]:
-                mini = i
-            if tableau_partage[i] > tableau_partage[maxi]:
-                maxi = i
-
-
-
+        with mutex:
+            move_to(25,1)    
+            erase_line()
+            en_couleur(CL_WHITE)
+            mini = 0
+            maxi = 0
+            for i in range(len(tableau_partage)):
+                if tableau_partage[i] < tableau_partage[mini]:
+                    mini = i
+                if tableau_partage[i] > tableau_partage[maxi]:
+                    maxi = i
         print("le dernier est : ", chevals[mini], ", et le premier est : ", chevals[maxi])
+        time.sleep(0.5)
      
 #------------------------------------------------
 def detourner_signal(signum, stack_frame) :
