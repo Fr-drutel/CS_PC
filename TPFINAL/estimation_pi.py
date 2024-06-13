@@ -4,7 +4,7 @@ par la méthode de Monte-Carlo, en utilisant une approche mono-processus et une 
 multi-processus. Le programme calcule le nombre de points tombant dans un cercle unité 
 et estime la valeur de Pi en fonction du ratio de ces points par rapport au nombre total 
 d'itérations.
-Réalisé par François Régis Drutel et Paul Dumont le 13/06/2024
+Réalisé par François-Régis Drutel et Paul Dumont le 13/06/2024
 À faire : Rien.
 """
 

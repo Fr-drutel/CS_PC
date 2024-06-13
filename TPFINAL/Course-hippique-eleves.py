@@ -1,5 +1,13 @@
-# Course hippique
-# Version très basique, sans mutex sur l'écran, sans arbitre, sans annoncer le gagant, ... ...
+"""
+Programme simulant une course hippique basique
+
+Le programme utilise des processus multiples pour simuler la progression de chaque cheval 
+sur une piste, en affichant la course dans la console. Le programme peut être interrompu 
+par un signal et permet de prédire le gagnant avant le début de la course.
+
+Réalisé par François-Régis Drutel et Paul Dumont le 06/06/2024
+À faire : J'ai essayé de changer le design des chevaux mais n'ai pas réussi...
+"""
 
 # Quelques codes d'échappement (tous ne sont pas utilisés)
 CLEARSCR="\x1B[2J\x1B[;H"          #  Clear SCReen
@@ -41,6 +49,7 @@ CL_LIGHTMAGENTA="\033[01;35m"           #  Magenta clair
 CL_LIGHTCYAN="\033[01;36m"              #  Cyan clair
 CL_WHITE="\033[01;37m"                  #  Blanc
 
+
 #-------------------------------------------------------
 import multiprocessing as mp
 import os, time,math, random, sys, ctypes, signal, string
@@ -62,11 +71,15 @@ def en_rouge() : print(CL_RED,end='') # Un exemple !
 def erase_line() : print(CLEARELN,end='')  
 
 
+def un_cheval(ma_ligne: int, keep_running, mutex):  
+    """
+    Fonction simulant la course d'un cheval.
 
-
-# La tache d'un cheval
-
-def un_cheval(ma_ligne: int, keep_running, mutex): # ma_ligne commence à 0
+    Args:
+        ma_ligne (int): Ligne du terminal où le cheval est affiché.
+        keep_running (mp.Value): Indicateur de course en cours.
+        mutex (mp.Lock): Mutex pour synchroniser l'accès à l'écran.
+    """
     col=1
 
     while col < LONGEUR_COURSE and keep_running.value :
@@ -82,12 +95,14 @@ def un_cheval(ma_ligne: int, keep_running, mutex): # ma_ligne commence à 0
 
         col+=1
         time.sleep(0.1 * random.randint(1,5))
-        
-    # Le premier arrivé gèle la course !
-    # J'ai fini, je le dis à tout le monde
+
+
     keep_running.value=False
 
 def arbitre():
+    """
+    Fonction simulant l'arbitre de la course, qui affiche le premier et le dernier cheval.
+    """
     col = 1
     while col < LONGEUR_COURSE and keep_running.value :
         with mutex:
@@ -103,15 +118,19 @@ def arbitre():
                     maxi = i
         print("le dernier est : ", chevals[mini], ", et le premier est : ", chevals[maxi])
      
-#------------------------------------------------
+
 def detourner_signal(signum, stack_frame) :
     move_to(24, 1)
     erase_line()
     move_to(24, 1)
     curseur_visible()
-    print("La course est interrompu ...")
+    print("La course est interrompue ...")
     exit(0)
+
+
 # ---------------------------------------------------
+
+
 # La partie principale :
 if __name__ == "__main__" :
          
@@ -130,7 +149,7 @@ if __name__ == "__main__" :
     effacer_ecran()
     curseur_invisible()
 
-    move_to(Nb_process+10, 1)
+    move_to(Nb_process+9, 1)
     prediction = input("Prédisez le gagnant (A, B, C, ...): ").upper()
     
     # Détournement d'interruption

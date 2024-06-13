@@ -4,7 +4,7 @@ et des sémaphores pour la synchronisation. Chaque processus demande un certain 
 de billes, effectue un travail, puis les rend. Un contrôleur vérifie la cohérence des 
 billes disponibles.
 
-Réalisé par François Régis Drutel et Paul Dumont le 13/06/2024
+Réalisé par François-Régis Drutel et Paul Dumont le 13/06/2024
 À faire : Rien.
 """
 
