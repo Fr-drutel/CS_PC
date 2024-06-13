@@ -117,3 +117,9 @@ if __name__ == "__main__" :
     move_to(24, 1)
     curseur_visible()
     print("Fini ... ", flush=True)
+
+
+import string
+
+chevals = string.ascii_uppercase
+print(chevals)
