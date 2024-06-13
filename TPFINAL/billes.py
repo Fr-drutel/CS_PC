@@ -127,27 +127,35 @@ should_exit = mp.Event()
 verrou = mp.Lock()
 sem1 = mp.Semaphore(0)
 
-p1 = mp.Process(target=process1, args=(
-    verrou, nb_billes_dispo, sem1, nb_en_attente))
-p2 = mp.Process(target=process2, args=(
-    verrou, nb_billes_dispo, sem1, nb_en_attente))
-p3 = mp.Process(target=process3, args=(
-    verrou, nb_billes_dispo, sem1, nb_en_attente))
-p4 = mp.Process(target=process4, args=(
-    verrou, nb_billes_dispo, sem1, nb_en_attente))
-pcontroleur = mp.Process(target=controleur, args=(nb_billes_dispo,))
+
+if __name__ == '__main__':
+    from multiprocessing import freeze_support
+    freeze_support() 
 
 
-# Démarrage des processus
-p1.start()
-p2.start()
-p3.start()
-p4.start()
-pcontroleur.start()
-p1.join()
-p2.join()
-p3.join()
-p4.join()
-pcontroleur.terminate()
+    p1 = mp.Process(target=process1, args=(
+        verrou, nb_billes_dispo, sem1, nb_en_attente))
+    p2 = mp.Process(target=process2, args=(
+        verrou, nb_billes_dispo, sem1, nb_en_attente))
+    p3 = mp.Process(target=process3, args=(
+        verrou, nb_billes_dispo, sem1, nb_en_attente))
+    p4 = mp.Process(target=process4, args=(
+        verrou, nb_billes_dispo, sem1, nb_en_attente))
+    pcontroleur = mp.Process(target=controleur, args=(nb_billes_dispo,))
 
-sys.exit(0)
+
+    p1.start()
+    p2.start()
+    p3.start()
+    p4.start()
+
+    pcontroleur.start()
+    
+    p1.join()
+    p2.join()
+    p3.join()
+    p4.join()
+    
+    pcontroleur.terminate()
+
+    sys.exit(0)
