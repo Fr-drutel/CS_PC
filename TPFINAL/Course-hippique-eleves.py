@@ -123,13 +123,14 @@ if __name__ == "__main__" :
     keep_running=mp.Value(ctypes.c_bool, True)
     mutex = mp.Lock()
 
-    Nb_process = 5
+    Nb_process = 20
     mes_process = [0 for i in range(Nb_process)]
     
     
     effacer_ecran()
     curseur_invisible()
 
+    move_to(Nb_process+10, 1)
     prediction = input("Prédisez le gagnant (A, B, C, ...): ").upper()
     
     # Détournement d'interruption
@@ -143,7 +144,7 @@ if __name__ == "__main__" :
 
 
     move_to(Nb_process+10, 1)
-    print("tous lancés, CTRL-C arrêtera la course ...")
+    print("Tous lancés, CTRL-C arrêtera la course ...")
     process_arbitre = mp.Process(target=arbitre)
     process_arbitre.start()
 
