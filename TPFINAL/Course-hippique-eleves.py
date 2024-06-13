@@ -76,12 +76,11 @@ def un_cheval(ma_ligne: int, keep_running, mutex): # ma_ligne commence à 0
 
     while col < LONGEUR_COURSE and keep_running.value :
         with mutex:
-            for i, line in enumerate(cheval_dessin):
-                move_to(ma_ligne * len(cheval_dessin) + i + 1, col)     
-                erase_line_from_beg_to_curs()
-                en_couleur(lyst_colors[ma_ligne%len(lyst_colors)])
-                print(line, end='')
-                tableau_partage[ma_ligne] = col
+            move_to(ma_ligne+1,col)         # pour effacer toute ma ligne
+            erase_line_from_beg_to_curs()
+            en_couleur(lyst_colors[ma_ligne%len(lyst_colors)])
+            print('('+chr(ord('A')+ma_ligne)+'>')
+            tableau_partage[i] = col
             
         if not keep_running.value:
             break
@@ -90,6 +89,23 @@ def un_cheval(ma_ligne: int, keep_running, mutex): # ma_ligne commence à 0
         time.sleep(0.1 * random.randint(1,5))
         
     # Le premier arrivé gèle la course !
+    # J'ai fini, je le dis à tout le monde
+    keep_running.value=False
+
+    # La tache d'un cheval
+def un_cheval(ma_ligne : int, keep_running) : # ma_ligne commence à 0
+    col=1
+
+    while col < LONGEUR_COURSE and keep_running.value :
+        move_to(ma_ligne+1,col)         # pour effacer toute ma ligne
+        erase_line_from_beg_to_curs()
+        en_couleur(lyst_colors[ma_ligne%len(lyst_colors)])
+        print('('+chr(ord('A')+ma_ligne)+'>')
+        tableau_partage[i] = col
+        col+=1
+        time.sleep(0.1 * random.randint(1,5))
+        
+    # Le premier arrivée gèle la course !
     # J'ai fini, je le dis à tout le monde
     keep_running.value=False
 
@@ -140,7 +156,7 @@ if __name__ == "__main__" :
     prediction = input("Prédisez le gagnant (A, B, C, ...): ").upper()
     
     # Détournement d'interruption
-    signal.signal(signal.SIGINT, detourner_signal) # CTRL_C_EVENT   ?
+    signal.signal(signal.SIGINT, detourner_signal) # CTRL_C_EVENT  ?
     tableau_partage = mp.Array('i', Nb_process)
     tableau_partage[:]= [0 for _ in range(Nb_process)]
 
