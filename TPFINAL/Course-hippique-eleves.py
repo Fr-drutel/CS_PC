@@ -87,23 +87,6 @@ def un_cheval(ma_ligne: int, keep_running, mutex): # ma_ligne commence à 0
     # J'ai fini, je le dis à tout le monde
     keep_running.value=False
 
-    # La tache d'un cheval
-def un_cheval(ma_ligne : int, keep_running) : # ma_ligne commence à 0
-    col=1
-
-    while col < LONGEUR_COURSE and keep_running.value :
-        move_to(ma_ligne+1,col)         # pour effacer toute ma ligne
-        erase_line_from_beg_to_curs()
-        en_couleur(lyst_colors[ma_ligne%len(lyst_colors)])
-        print('('+chr(ord('A')+ma_ligne)+'>')
-        tableau_partage[i] = col
-        col+=1
-        time.sleep(0.1 * random.randint(1,5))
-        
-    # Le premier arrivée gèle la course !
-    # J'ai fini, je le dis à tout le monde
-    keep_running.value=False
-
 def arbitre():
     col = 1
     while col < LONGEUR_COURSE and keep_running.value :
@@ -119,7 +102,6 @@ def arbitre():
                 if tableau_partage[i] > tableau_partage[maxi]:
                     maxi = i
         print("le dernier est : ", chevals[mini], ", et le premier est : ", chevals[maxi])
-        time.sleep(0.5)
      
 #------------------------------------------------
 def detourner_signal(signum, stack_frame) :
