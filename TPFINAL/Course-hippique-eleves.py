@@ -62,12 +62,7 @@ def en_rouge() : print(CL_RED,end='') # Un exemple !
 def erase_line() : print(CLEARELN,end='')  
 
 
-cheval_dessin = [
-    " _______\\/",
-    "/------_.\\",
-    "/_____/",
-    "/\\ /\\"
-]
+
 
 # La tache d'un cheval
 
@@ -165,7 +160,7 @@ if __name__ == "__main__" :
         mes_process[i].start()
 
 
-    move_to(Nb_process * len(cheval_dessin) + 10, 1)
+    move_to(Nb_process+10, 1)
     print("tous lancés, CTRL-C arrêtera la course ...")
     process_arbitre = mp.Process(target=arbitre)
     process_arbitre.start()
