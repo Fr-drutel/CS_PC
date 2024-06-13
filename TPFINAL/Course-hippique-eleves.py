@@ -80,13 +80,14 @@ def un_cheval(ma_ligne: int, keep_running, mutex): # ma_ligne commence à 0
                 move_to(ma_ligne * len(cheval_dessin) + i + 1, col)     
                 erase_line_from_beg_to_curs()
                 en_couleur(lyst_colors[ma_ligne%len(lyst_colors)])
-                print(ma_ligne)
+                print(line, end='')
                 tableau_partage[ma_ligne] = col
             
-            if not keep_running.value:
-                break
-            col+=1
-            time.sleep(0.1 * random.randint(1,5))
+        if not keep_running.value:
+            break
+
+        col+=1
+        time.sleep(0.1 * random.randint(1,5))
         
     # Le premier arrivé gèle la course !
     # J'ai fini, je le dis à tout le monde
