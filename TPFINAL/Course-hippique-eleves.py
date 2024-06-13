@@ -80,8 +80,8 @@ def un_cheval(ma_ligne: int, keep_running, mutex): # ma_ligne commence à 0
                 move_to(ma_ligne * len(cheval_dessin) + i + 1, col)     
                 erase_line_from_beg_to_curs()
                 en_couleur(lyst_colors[ma_ligne%len(lyst_colors)])
-                print(line)
-                tableau_partage[line] = col
+                print(ma_ligne)
+                tableau_partage[ma_ligne] = col
             
             if not keep_running.value:
                 break
@@ -180,70 +180,3 @@ if __name__ == "__main__" :
 
 
 
-
-
-Process Process-1:
-Process Process-2:
-Traceback (most recent call last):
-Process Process-3:
-Traceback (most recent call last):urse ...
-Process Process-4:
-Traceback (most recent call last):
-Traceback (most recent call last):
-Process Process-5:
-Traceback (most recent call last):
-  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
-    self.run()
-  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
-    self._target(*self._args, **self._kwargs)
-  File "/home/fr.drutel/Documents/Programmation concurente/projet/CS_PC/TPFINAL/Course-hippique-eleves.py", line 84, in un_cheval
-    tableau_partage[line] = col
-    ~~~~~~~~~~~~~~~^^^^^^
-  File "/usr/lib/python3.12/multiprocessing/sharedctypes.py", line 227, in __setitem__
-    self._obj[i] = value
-    ~~~~~~~~~^^^
-TypeError: indices must be integer
-  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
-    self.run()
-  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
-    self._target(*self._args, **self._kwargs)
-  File "/home/fr.drutel/Documents/Programmation concurente/projet/CS_PC/TPFINAL/Course-hippique-eleves.py", line 84, in un_cheval
-    tableau_partage[line] = col
-    ~~~~~~~~~~~~~~~^^^^^^
-  File "/usr/lib/python3.12/multiprocessing/sharedctypes.py", line 227, in __setitem__
-    self._obj[i] = value
-    ~~~~~~~~~^^^
-TypeError: indices must be integer
-  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
-    self.run()
-  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
-    self._target(*self._args, **self._kwargs)
-Fini ... home/fr.drutel/Documents/Programmation concurente/projet/CS_PC/TPFINAL/Course-hippique-eleves.py", line 84, in un_cheval
-    tableau_partage[line] = col
-Loser~~~~~~~~~~~~~~^^^^^^
-  File "/usr/lib/python3.12/multiprocessing/sharedctypes.py", line 227, in __setitem__
-le dernier est :  A , et le premier est :  A
-    ~~~~~~~~~^^^
-TypeError: indices must be integer
-  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
-    self.run()
-  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
-    self._target(*self._args, **self._kwargs)
-  File "/home/fr.drutel/Documents/Programmation concurente/projet/CS_PC/TPFINAL/Course-hippique-eleves.py", line 84, in un_cheval
-    tableau_partage[line] = col
-    ~~~~~~~~~~~~~~~^^^^^^
-  File "/usr/lib/python3.12/multiprocessing/sharedctypes.py", line 227, in __setitem__
-    self._obj[i] = value
-    ~~~~~~~~~^^^
-TypeError: indices must be integer
-  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
-    self.run()
-  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
-    self._target(*self._args, **self._kwargs)
-  File "/home/fr.drutel/Documents/Programmation concurente/projet/CS_PC/TPFINAL/Course-hippique-eleves.py", line 84, in un_cheval
-    tableau_partage[line] = col
-    ~~~~~~~~~~~~~~~^^^^^^
-  File "/usr/lib/python3.12/multiprocessing/sharedctypes.py", line 227, in __setitem__
-    self._obj[i] = value
-    ~~~~~~~~~^^^
-TypeError: indices must be integer
