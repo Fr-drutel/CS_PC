@@ -8,7 +8,7 @@ import random
 
 #def des variables
 m = 5
-k = [4,3,5,2]
+k = [4,6,5,5]
 nb_bille_max = 9
 nb_bille_dispo = mp.Value('i', nb_bille_max)
 nb_en_attente = mp.Value('i', 0)
@@ -32,11 +32,12 @@ def rendre(verrou, billes, nb_bille_dispo, sem1, nb_en_attente):
     verrou.acquire()
     print("je rend", billes , "bille(s)")
     nb_bille_dispo.value = nb_bille_dispo.value + billes
-    verrou.release()
 
     for i in range(nb_en_attente.value):
         sem1.release()
-        nb_en_attente.value-=1
+    nb_en_attente.value=0
+
+    verrou.release()
 
 
 # def des process
@@ -113,9 +114,3 @@ pcontroleur.terminate()
 
 #fin
 sys.exit(0)
-
-
-
-
-
-
