@@ -174,14 +174,10 @@ if __name__ == "__main__" :
     print("Fini ... ", flush=True)
 
     
-    chevals_gagnants = []
-
-    for i in range(len(tableau_partage)):
-        if tableau_partage[i] == LONGEUR_COURSE-1:
-            chevals_gagnants.append(i)
+    chevals_gagnants = [i for i in range(len(tableau_partage)) if tableau_partage[i] == LONGEUR_COURSE - 1]
 
     for i in chevals_gagnants:
-        print('Le(s) gagnant(s) est/sont :', chevals[i], end=" ")
+        print(f'Le(s) gagnant(s) est/sont : {chevals[i]}, ', end=" ")
 
     if prediction in [chevals[i] for i in chevals_gagnants]:
         print("\nJackpot !!!!!")
