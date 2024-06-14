@@ -38,7 +38,7 @@ def tache_processus(nb_iteration, queue):
     """
     Fonction de travail pour chaque processus.
 
-    Args:
+    Arguments d'entrée:
         nb_iteration (integer): Nombre d'itérations pour l'estimation.
         queue: queue pour stocker les résultats.
     """

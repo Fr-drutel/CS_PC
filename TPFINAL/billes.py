@@ -129,8 +129,7 @@ sem1 = mp.Semaphore(0)
 
 
 if __name__ == '__main__':
-    from multiprocessing import freeze_support
-    freeze_support() 
+
 
 
     p1 = mp.Process(target=process1, args=(
@@ -150,12 +149,12 @@ if __name__ == '__main__':
     p4.start()
 
     pcontroleur.start()
-    
+
     p1.join()
     p2.join()
     p3.join()
     p4.join()
-    
+
     pcontroleur.terminate()
 
     sys.exit(0)
