@@ -73,12 +73,13 @@ if __name__ == "__main__":
 
     demandeur_process.join()
 
-    while any(process.is_alive() for process in calculateurs):
-        try:
-            cmd, res = reponse_queue.get(timeout=2)
-            print('Le demandeur a recu la réponse pour', cmd, '=', res)
-        except Exception as e:
-            print(e)
+    reponses = 0
+    total_reponses = nb_calculateurs * 10 
+
+    while reponses < total_reponses:
+        cmd, res = reponse_queue.get()
+        print('Le demandeur a reçu la réponse pour', cmd, '=', res)
+        reponses += 1
     
     for process in calculateurs:
         process.join()
