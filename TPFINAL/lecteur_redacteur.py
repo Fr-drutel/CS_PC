@@ -13,15 +13,12 @@ nbr_demandes_de_rédaction = mp.Value('i', 0)
 nbr_lecteur = mp.Value('i', 0)
 nbr_rédacteur = mp.Value('i', 0)
 
-# création du sémaphore
 p_rl = mp.Semaphore(1)
 scl = mp.Semaphore(1)
 mutex = mp.Semaphore(1)
 r = mp.Semaphore(1)
 
 print("...debut...")
-
-# redacteur
 
 
 def redacteur(redacteur_id, nbr_lecteur, nbr_rédacteur):
@@ -74,21 +71,22 @@ def lecteur(lecteur_id, nbr_lecteur, nbr_rédacteur):
             r.release()
         mutex.release()
 
+if __name__ == '__main__':
 
-# Création des processus
-for i in range(1, 3):
-    liste_r.append(mp.Process(target=redacteur,
-                   args=(i, nbr_lecteur, nbr_rédacteur)))
+    # Création des processus
+    for i in range(1, 3):
+        liste_r.append(mp.Process(target=redacteur,
+                    args=(i, nbr_lecteur, nbr_rédacteur)))
 
-for i in range(1, 5):
-    liste_l.append(mp.Process(
-        target=lecteur, args=(i, nbr_lecteur, nbr_rédacteur)))
+    for i in range(1, 5):
+        liste_l.append(mp.Process(
+            target=lecteur, args=(i, nbr_lecteur, nbr_rédacteur)))
 
-# Démarrage des processus
-for l in liste_l:
-    l.start()
+    # Démarrage des processus
+    for l in liste_l:
+        l.start()
 
-for re in liste_r:
-    re.start()
+    for re in liste_r:
+        re.start()
 
-sys.exit(0)
+    sys.exit(0)
