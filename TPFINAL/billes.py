@@ -30,11 +30,11 @@ def demander(verrou, billes, nb_billes_dispo, sem1, nb_en_attente):
     Fonction pour demander des billes.
 
     Arguments d'entrée:
-        verrou (multiprocessing.Lock): Le verrou pour la synchronisation.
-        billes (int): Nombre de billes demandées.
-        nb_bille_dispo (multiprocessing.Value): Nombre de billes disponibles.
-        sem1 (multiprocessing.Semaphore): Sémaphore pour la gestion de la file d'attente.
-        nb_en_attente (multiprocessing.Value): Nombre de processus en attente.
+        verrou: Le verrou pour la synchronisation.
+        billes (integer): Nombre de billes demandées.
+        nb_bille_dispo: Nombre de billes disponibles.
+        sem1: Sémaphore pour la gestion de la file d'attente.
+        nb_en_attente: Nombre de processus en attente.
     """
     
     verrou.acquire()
@@ -58,11 +58,11 @@ def rendre(verrou, billes, nb_billes_dispo, sem1, nb_en_attente):
     Fonction pour rendre des billes.
 
     Arguments d'entrée:
-        verrou (multiprocessing.Lock): Le verrou pour la synchronisation.
-        billes (int): Nombre de billes à rendre.
-        nb_bille_dispo (multiprocessing.Value): Nombre de billes disponibles.
-        sem1 (multiprocessing.Semaphore): Sémaphore pour la gestion de la file d'attente.
-        nb_en_attente (multiprocessing.Value): Nombre de processus en attente.
+        verrou: Le verrou pour la synchronisation.
+        billes (integer): Nombre de billes à rendre.
+        nb_bille_dispo: Nombre de billes disponibles.
+        sem1: Sémaphore pour la gestion de la file d'attente.
+        nb_en_attente: Nombre de processus en attente.
     """
     
     verrou.acquire()

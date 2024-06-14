@@ -76,9 +76,9 @@ def un_cheval(ma_ligne: int, keep_running, mutex):
     Fonction simulant la course d'un cheval.
 
     Arguments d'entrée:
-        ma_ligne (int): Ligne du terminal où le cheval est affiché.
-        keep_running (mp.Value): Indicateur de course en cours.
-        mutex (mp.Lock): Mutex pour synchroniser l'accès à l'écran.
+        ma_ligne (integer): Ligne du terminal où le cheval est affiché.
+        keep_running: Indicateur de course en cours.
+        mutex: Mutex pour synchroniser l'accès à l'écran.
     """
     col=1
 

@@ -23,7 +23,7 @@ def frequence_de_hits_pour_n_essais(nb_iteration):
         nb_iteration (integer): Nombre d'itérations pour l'estimation.
 
     Arguments de sortie:
-        integer: Nombre de hits dans le cercle unité.
+        count (integer): Nombre de hits dans le cercle unité.
     """
     count = 0
     for i in range(nb_iteration):
