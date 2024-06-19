@@ -71,7 +71,7 @@ def en_rouge() : print(CL_RED,end='') # Un exemple !
 def erase_line() : print(CLEARELN,end='')  
 
 
-def un_cheval(ma_ligne: int, keep_running, mutex):  
+def un_cheval(ma_ligne: int, keep_running, mutex, tableau_partage):  
     """
     Fonction simulant la course d'un cheval.
 
@@ -88,23 +88,23 @@ def un_cheval(ma_ligne: int, keep_running, mutex):
             erase_line_from_beg_to_curs()
             en_couleur(lyst_colors[ma_ligne%len(lyst_colors)])
             print('('+chr(ord('A')+ma_ligne)+'>')
-            tableau_partage[i] = col
+            # tableau_partage[i] = col
             
-        if not keep_running.value:
-            break
-
+        # if not keep_running.value:
+        #     break
+        tableau_partage[ma_ligne] = col
         col+=1
         time.sleep(0.1 * random.randint(1,5))
 
 
     keep_running.value=False
 
-def arbitre():
+def arbitre(keep_running, mutex, tableau_partage):
     """
     Fonction simulant l'arbitre de la course, qui affiche le premier et le dernier cheval.
     """
-    col = 1
-    while col < LONGEUR_COURSE and keep_running.value :
+    while keep_running.value :
+        time.sleep(1)
         with mutex:
             move_to(25,1)    
             erase_line()
@@ -141,33 +141,34 @@ if __name__ == "__main__" :
     LONGEUR_COURSE = 50 # Tout le monde aura la même copie (donc no need to have a 'value')
     keep_running=mp.Value(ctypes.c_bool, True)
     mutex = mp.Lock()
-
     Nb_process = 20
     mes_process = [0 for i in range(Nb_process)]
-    
+    tableau_partage = mp.Array('i', Nb_process)
+    tableau_partage[:]= [0 for _ in range(Nb_process)]
     
     effacer_ecran()
     curseur_invisible()
-
     move_to(Nb_process+9, 1)
     prediction = input("Prédisez le gagnant (A, B, C, ...): ").upper()
     
     # Détournement d'interruption
     signal.signal(signal.SIGINT, detourner_signal) # CTRL_C_EVENT  ?
-    tableau_partage = mp.Array('i', Nb_process)
-    tableau_partage[:]= [0 for _ in range(Nb_process)]
 
     for i in range(Nb_process):  # Lancer   Nb_process  processus
-        mes_process[i] = mp.Process(target=un_cheval, args= (i, keep_running, mutex))
+        mes_process[i] = mp.Process(target=un_cheval, args= (i, keep_running, mutex, tableau_partage))
         mes_process[i].start()
-
-
-    move_to(Nb_process+10, 1)
-    print("Tous lancés, CTRL-C arrêtera la course ...")
-    process_arbitre = mp.Process(target=arbitre)
+    
+    
+    process_arbitre = mp.Process(target=arbitre, args=(keep_running, mutex, tableau_partage))
     process_arbitre.start()
 
+    move_to(Nb_process + 10, 1)
+    print("Tous lancés, CTRL-C arrêtera la course ...")
+  
     for i in range(Nb_process): mes_process[i].join()
+
+    # process_arbitre.terminate()
+    # process_arbitre.join()
 
     move_to(21, 1)
     curseur_visible()
@@ -176,15 +177,32 @@ if __name__ == "__main__" :
     
     chevals_gagnants = [i for i in range(len(tableau_partage)) if tableau_partage[i] == LONGEUR_COURSE - 1]
 
-    for i in chevals_gagnants:
-        print(f'Le(s) gagnant(s) est/sont : {chevals[i]} ', end=" ")
+    # for i in chevals_gagnants:
+    #     print('Le(s) gagnant(s) est/sont : chevals[i] ', end=" ")
 
-    if prediction in [chevals[i] for i in chevals_gagnants]:
-        print("\nJackpot !!!!!")
-    else:
-        print("\nLoser")
+    # if prediction in [chevals[i] for i in chevals_gagnants]:
+    #     print("Jackpot !!!!!")
+    # else:
+    #     print("Loser")
 
         
+
+           
+    for i in chevals_gagnants:
+        print('Le(s) gagnant(s) est/sont : chevals[i] ', end=" ")
+    
+        if prediction in chevals[i] :
+            print("Jackpot !!!!!")
+        else:
+            print("Loser")
+
+            
+
+
+
+
+
+
 
 
 

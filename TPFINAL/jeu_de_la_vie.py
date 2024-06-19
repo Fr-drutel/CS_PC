@@ -1,3 +1,12 @@
+"""
+Programme qui est une simulation du jeu de la vie de Conway en utilisant des sémaphores 
+et le multiprocessus. Le programme crée une grille initiale aléatoire et fait évoluer la 
+grille au fil des itérations en affichant les résultats dans le terminal.
+
+Réalisé par François-Régis Drutel et Paul Dumont le 13/06/2024
+À faire : Rien.
+"""
+
 import multiprocessing as mp
 import random
 import time
@@ -10,23 +19,29 @@ CL_GREEN="\033[1;32m"      # Couleur verte pour les cellules vivantes
 CL_ROUGE="\033[1;31m"      # Couleur rouge pour les cellules mortes
 RESET_COLOR="\033[0m"      # Réinitialisation de la couleur
 
-#on efface l'ecran
+
 def effacer_ecran():
     print(CLEARSCR, end='')
 
-# curseur invisible pour le terminal
 def curseur_invisible():
-
     print(CURSOFF, end='')
 
-#  curseur visible pour le terminal
 def curseur_visible():
     """Affiche le curseur"""
     print(CURSON, end='')
 
-# on compte le nombre de voisin en vie autour de la céllule
 def voisinage(grille, x, y):
+    """
+    Compte le nombre de cellules vivantes autour d'une cellule donnée.
 
+    Arguments d'entrée:
+    grille (list): La grille de jeu.
+    x (integer): Position en x de la cellule.
+    y (integer): Position en y de la cellule.
+
+    Arguments de sortie:
+    nombre_de_vivant (integer): Le nombre de cellules vivantes autour de la cellule (x, y).
+    """
     nombre_de_vivant = 0
     directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
     longeur_en_x = len(grille)
@@ -43,8 +58,15 @@ def voisinage(grille, x, y):
     
     return nombre_de_vivant
 
-#  ici on fait évoluer la grille
+
 def evolution(queue_entree, queue_sortie):
+    """
+    Fait évoluer la grille à chaque itération selon les règles du jeu de la vie.
+
+    Arguments d'entrée:
+    queue_entree: Queue pour recevoir la grille actuelle.
+    queue_sortie: Queue pour envoyer la nouvelle grille.
+    """
     iteration = 1  
     
     while True:  
@@ -74,7 +96,13 @@ def evolution(queue_entree, queue_sortie):
         iteration += 1 
 
 def afficher_grille(iteration, grille):
-    """Affiche la grille dans le terminal avec le numéro d'itération"""
+    """
+    Affiche la grille dans le terminal avec le numéro d'itération.
+
+    Arguments:
+    iteration (integer): Numéro de l'itération actuelle.
+    grille (list): La grille de jeu actuelle.
+    """
     print(f"Iteration {iteration}:")
     for ligne in grille:
         for cellule in ligne:
@@ -86,8 +114,9 @@ def afficher_grille(iteration, grille):
     print()
 
 if __name__ == '__main__':
-    taille_grille = 15
 
+    taille_grille = 15
+    # Initialisation de la grille avec des valeurs aléatoires
     grille = [[random.randint(0, 1) for _ in range(taille_grille)] for _ in range(taille_grille)]
 
     queue_entree = mp.Queue()
@@ -101,11 +130,13 @@ if __name__ == '__main__':
     effacer_ecran()
     curseur_invisible()
 
-    while True:
-        iteration, nouvelle_grille = queue_sortie.get(timeout=2) 
+    try:
+        while True:
+            iteration, nouvelle_grille = queue_sortie.get(timeout=2) 
+            afficher_grille(iteration, nouvelle_grille)
+            queue_entree.put(nouvelle_grille)
+            time.sleep(1)
+    except KeyboardInterrupt:
+        process.terminate()
 
-        afficher_grille(iteration, nouvelle_grille)
-        
-        queue_entree.put(nouvelle_grille)
-        
-        time.sleep(1)  
+    curseur_visible()
