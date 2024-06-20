@@ -52,9 +52,11 @@ CL_WHITE="\033[01;37m"                  #  Blanc
 
 #-------------------------------------------------------
 import multiprocessing as mp
-import os, time,math, random, sys, ctypes, signal, string
-
-chevals = string.ascii_uppercase
+import time
+import random
+import ctypes
+import signal
+import string
 
 # Une liste de couleurs à affecter aléatoirement aux chevaux
 lyst_colors=[CL_WHITE, CL_RED, CL_GREEN, CL_BROWN , CL_BLUE, CL_MAGENTA, CL_CYAN, CL_GRAY,
@@ -79,6 +81,7 @@ def un_cheval(ma_ligne: int, keep_running, mutex, tableau_partage):
         ma_ligne (integer): Ligne du terminal où le cheval est affiché.
         keep_running: Indicateur de course en cours.
         mutex: Mutex pour synchroniser l'accès à l'écran.
+        tableau_partage: Tableau partagé pour suivre les positions des chevaux.
     """
     col=1
 
@@ -88,20 +91,19 @@ def un_cheval(ma_ligne: int, keep_running, mutex, tableau_partage):
             erase_line_from_beg_to_curs()
             en_couleur(lyst_colors[ma_ligne%len(lyst_colors)])
             print('('+chr(ord('A')+ma_ligne)+'>')
-            # tableau_partage[i] = col
-            
-        # if not keep_running.value:
-        #     break
         tableau_partage[ma_ligne] = col
         col+=1
         time.sleep(0.1 * random.randint(1,5))
-
-
     keep_running.value=False
 
 def arbitre(keep_running, mutex, tableau_partage):
     """
     Fonction simulant l'arbitre de la course, qui affiche le premier et le dernier cheval.
+
+    Arguments d'entrée:
+        keep_running: Indicateur de course en cours.
+        mutex: Mutex pour synchroniser l'accès à l'écran.
+        tableau_partage: Tableau partagé pour suivre les positions des chevaux.
     """
     while keep_running.value :
         time.sleep(1)
@@ -117,6 +119,7 @@ def arbitre(keep_running, mutex, tableau_partage):
                 if tableau_partage[i] > tableau_partage[maxi]:
                     maxi = i
         print("le dernier est : ", chevals[mini], ", et le premier est : ", chevals[maxi])
+     
      
 
 def detourner_signal(signum, stack_frame) :
@@ -138,27 +141,30 @@ if __name__ == "__main__" :
     if platform.system() == "Darwin" :
         mp.set_start_method('fork') # Nécessaire sous macos, OK pour Linux (voir le fichier des sujets)
         
-    LONGEUR_COURSE = 50 # Tout le monde aura la même copie (donc no need to have a 'value')
+    LONGEUR_COURSE = 50 # Tout le monde aura la même copie (donc no need to have a 'value')    
     keep_running=mp.Value(ctypes.c_bool, True)
     mutex = mp.Lock()
     Nb_process = 20
     mes_process = [0 for i in range(Nb_process)]
     tableau_partage = mp.Array('i', Nb_process)
     tableau_partage[:]= [0 for _ in range(Nb_process)]
+    chevals = string.ascii_uppercase
+    
     
     effacer_ecran()
     curseur_invisible()
     move_to(Nb_process+9, 1)
     prediction = input("Prédisez le gagnant (A, B, C, ...): ").upper()
-    
+   
     # Détournement d'interruption
     signal.signal(signal.SIGINT, detourner_signal) # CTRL_C_EVENT  ?
 
-    for i in range(Nb_process):  # Lancer   Nb_process  processus
+    # On lance chaque cheval
+    for i in range(Nb_process):  
         mes_process[i] = mp.Process(target=un_cheval, args= (i, keep_running, mutex, tableau_partage))
         mes_process[i].start()
-    
-    
+
+    # On lance l'arbitre
     process_arbitre = mp.Process(target=arbitre, args=(keep_running, mutex, tableau_partage))
     process_arbitre.start()
 
@@ -167,42 +173,28 @@ if __name__ == "__main__" :
   
     for i in range(Nb_process): mes_process[i].join()
 
-    # process_arbitre.terminate()
-    # process_arbitre.join()
 
     move_to(21, 1)
     curseur_visible()
     print("Fini ... ", flush=True)
 
     
+    # On détermine les gagnants
     chevals_gagnants = [i for i in range(len(tableau_partage)) if tableau_partage[i] == LONGEUR_COURSE - 1]
 
-    # for i in chevals_gagnants:
-    #     print('Le(s) gagnant(s) est/sont : chevals[i] ', end=" ")
+    for i in chevals_gagnants:
+        print(f'Le(s) gagnant(s) est/sont : {chevals[i]} ', end=" ")
 
-    # if prediction in [chevals[i] for i in chevals_gagnants]:
-    #     print("Jackpot !!!!!")
-    # else:
-    #     print("Loser")
+    # On vérifie que la prédiction est juste ou pas 
+    if prediction in [chevals[i] for i in chevals_gagnants]:
+        print("\nJackpot !!!! Vous avez gagné votre pari :)")
+    else:
+        print("\nVous avez perdu votre pari :(")
 
         
 
-           
-    for i in chevals_gagnants:
-        print('Le(s) gagnant(s) est/sont : chevals[i] ', end=" ")
-    
-        if prediction in chevals[i] :
-            print("Jackpot !!!!!")
-        else:
-            print("Loser")
 
-            
-
-
-
-
-
-
+        
 
 
 

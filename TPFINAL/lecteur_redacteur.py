@@ -11,8 +11,8 @@ import multiprocessing as mp
 import time
 import random
 
-liste_l = []
-liste_r = []
+liste_lecteurs = []
+liste_rédacteurs = []
 
 # Initialisation des variables partagées
 nbr_demandes_de_rédaction = mp.Value('i', 0)
@@ -33,17 +33,17 @@ def redacteur(redacteur_id, nbr_redacteur, scl, mutex, r):
     Arguments d'entrée:
     redacteur_id (integer): Identifiant du rédacteur.
     nbr_redacteur: Nombre de rédacteurs actifs.
-    scl: Sémaphore pour la section critique des lecteurs.
+    scl: Sémaphore pour bloquer les lecteurs.
     mutex: Sémaphore d'exclusion mutuelle.
     r: Sémaphore pour l'accès des rédacteurs au document partagé.
     """
     while True:
-        time.sleep(random.uniform(2, 4))
 
+        time.sleep(random.uniform(2, 4)) # Pause aléatoire entre les écritures
         mutex.acquire()
         nbr_redacteur.value += 1
         if nbr_redacteur.value == 1:
-            scl.acquire()
+            scl.acquire() # Bloque les lecteurs si c'est le premier rédacteur
         mutex.release()
 
         r.acquire()
@@ -57,7 +57,7 @@ def redacteur(redacteur_id, nbr_redacteur, scl, mutex, r):
         mutex.acquire()
         nbr_redacteur.value -= 1
         if nbr_redacteur.value == 0:
-            scl.release()
+            scl.release() # Libère les lecteurs si c'est le dernier rédacteur
         mutex.release()
 
 
@@ -69,19 +69,19 @@ def lecteur(lecteur_id, nbr_lecteur, p_rl, scl, mutex, r):
     lecteur_id (integer): Identifiant du lecteur.
     nbr_lecteur: Nombre de lecteurs actifs.
     p_rl: Sémaphore pour la priorité des rédacteurs.
-    scl: Sémaphore pour la section critique des lecteurs.
+    scl: Sémaphore pour bloquer les lecteurs.
     mutex: Sémaphore d'exclusion mutuelle.
     r: Sémaphore pour l'accès des rédacteurs au document partagé.
     """
     while True:
-        time.sleep(random.uniform(1, 3))
 
+        time.sleep(random.uniform(1, 3)) # Pause aléatoire entre les lectures
         p_rl.acquire()
         scl.acquire()
         mutex.acquire()
         nbr_lecteur.value += 1
         if nbr_lecteur.value == 1:
-            r.acquire()
+            r.acquire() # Bloque les rédacteurs si c'est le premier lecteur
         mutex.release()
         scl.release()
         p_rl.release()
@@ -93,28 +93,31 @@ def lecteur(lecteur_id, nbr_lecteur, p_rl, scl, mutex, r):
         mutex.acquire()
         nbr_lecteur.value -= 1
         if nbr_lecteur.value == 0:
-            r.release()
+            r.release() # Libère les rédacteurs si c'est le dernier lecteur
         mutex.release()
 
 if __name__ == "__main__":
     print("...debut...")
     
-    
+    # Création rédacteurs
     for i in range(1, 3):
-        liste_r.append(mp.Process(target=redacteur, args=(i, nbr_lecteur, nbr_redacteur, p_rl, scl, mutex, r)))
+        liste_rédacteurs.append(mp.Process(target=redacteur, args=(i, nbr_redacteur, scl, mutex, r)))
 
+    #Création lecteurs
     for i in range(1, 5):
-        liste_l.append(mp.Process(target=lecteur, args=(i, nbr_lecteur, nbr_redacteur, p_rl, scl, mutex, r)))
+        liste_lecteurs.append(mp.Process(target=lecteur, args=(i, nbr_lecteur, p_rl, scl, mutex, r)))
 
-    for l in liste_l:
+    # Démarrages
+    for l in liste_lecteurs:
         l.start()
 
-    for re in liste_r:
+    for re in liste_rédacteurs:
         re.start()
 
-    for l in liste_l:
+    # Attentes fin des processus
+    for l in liste_lecteurs:
         l.join()
         time.sleep(random.uniform(1, 3))
-
-    for re in liste_r:
+        
+    for re in liste_rédacteurs:
         re.join()

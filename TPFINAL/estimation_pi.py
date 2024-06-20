@@ -4,6 +4,7 @@ par la méthode de Monte-Carlo, en utilisant une approche mono-processus et une 
 multi-processus. Le programme calcule le nombre de points tombant dans un cercle unité 
 et estime la valeur de Pi en fonction du ratio de ces points par rapport au nombre total 
 d'itérations.
+
 Réalisé par François-Régis Drutel et Paul Dumont le 13/06/2024
 À faire : Rien.
 """
@@ -13,8 +14,6 @@ import time
 import multiprocessing as mp
 
 # Calculer le nombre de hits dans un cercle unitaire (utilisé par les différentes méthodes)
-
-
 def frequence_de_hits_pour_n_essais(nb_iteration):
     """
     Calcule le nombre de points qui tombent dans le cercle unité.
@@ -40,22 +39,28 @@ def tache_processus(nb_iteration, queue):
 
     Arguments d'entrée:
         nb_iteration (integer): Nombre d'itérations pour l'estimation.
-        queue: queue pour stocker les résultats.
+        queue: Queue pour stocker les résultats.
     """
     count = frequence_de_hits_pour_n_essais(nb_iteration)
     queue.put(count)
 
 
 if __name__ == "__main__":
+
     nb_total_iteration = 10000000  # Nombre d’essai pour l’estimation
 
     # _________________________Version Mono-process____________________________#
 
+    # Démarrage du chronomètre pour la version mono-processus
     debut_mono = time.time()
+
+    # Calcul du nombre de hits en utilisant un seul processus
     nb_hits = frequence_de_hits_pour_n_essais(nb_total_iteration)
+
+    # Fin du chronomètre pour la version mono-processus
     fin_mono = time.time()
 
-    print("Valeur estimée Pi par la méthode Mono-Processus : ",
+    print("Valeur estimée de pi par la méthode Mono-Processus : ",
           4 * nb_hits / nb_total_iteration)
     print("Temps de calcul (Mono-Processus) : ",
           fin_mono - debut_mono, "secondes")
@@ -68,10 +73,11 @@ if __name__ == "__main__":
     queue = mp.Queue()
     nb_hits = 0
 
+    # Démarrage du chronomètre pour la version multi-processus
     debut_multi = time.time()
 
     for i in range(nb_process):
-        # On crée un process
+        # On crée le process
         process = mp.Process(target=tache_processus, args=(
             nb_iterations_par_process, queue))
         # On le met dans la liste
@@ -79,7 +85,7 @@ if __name__ == "__main__":
         # On le démarre
         process.start()
 
-    # Quand on a tous les process dans la liste ils join tous en même temps piu o meno
+    # Quand on a tous les process dans la liste ils join tous en même temps 
     for process in liste_process:
         process.join()
 
@@ -87,9 +93,10 @@ if __name__ == "__main__":
     while not queue.empty():
         nb_hits += queue.get()
 
+    # Fin du chronomètre pour la version multi-processus
     fin_multi = time.time()
 
-    print("Valeur estimée Pi par la méthode Multi-Processus : ",
+    print("Valeur estimée de pi par la méthode Multi-Processus : ",
           4 * nb_hits / nb_total_iteration)
     print("Temps de calcul (Multi-Processus) : ",
           fin_multi - debut_multi, "secondes")

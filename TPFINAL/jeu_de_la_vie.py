@@ -8,8 +8,8 @@ Réalisé par François-Régis Drutel et Paul Dumont le 13/06/2024
 """
 
 import multiprocessing as mp
-import random
 import time
+import random
 from queue import Empty
 
 CLEARSCR="\x1B[2J\x1B[;H"  # Efface l'écran
@@ -71,13 +71,14 @@ def evolution(queue_entree, queue_sortie):
     
     while True:  
         try:
-            grille = queue_entree.get(timeout=2)
+            grille = queue_entree.get(timeout=2) # Récupère la grille actuelle
         except Empty:
             continue
         
         taille_grille = len(grille)
         nouvelle_grille = [[0] * taille_grille for _ in range(taille_grille)]
         
+        # Calcule la nouvelle grille
         for i in range(len(grille)):
             for j in range(len(grille[0])):
                 vivants = voisinage(grille, i, j)
@@ -92,7 +93,7 @@ def evolution(queue_entree, queue_sortie):
                     else:
                         nouvelle_grille[i][j] = 0  #  reste morte
         
-        queue_sortie.put((iteration, nouvelle_grille))  
+        queue_sortie.put((iteration, nouvelle_grille)) # Envoie la grille crée avec le numéro d'itération 
         iteration += 1 
 
 def afficher_grille(iteration, grille):
@@ -107,22 +108,23 @@ def afficher_grille(iteration, grille):
     for ligne in grille:
         for cellule in ligne:
             if cellule == 1:
-                print(CL_GREEN + 'O' + RESET_COLOR, end=' ') 
+                print(CL_GREEN + 'O' + RESET_COLOR, end=' ') # Cellule vivante en vert
             else:
-                print(CL_ROUGE + '.' + RESET_COLOR, end=' ')
+                print(CL_ROUGE + '.' + RESET_COLOR, end=' ') # Cellule morte en rouge
         print() 
     print()
 
 if __name__ == '__main__':
 
     taille_grille = 15
+
     # Initialisation de la grille avec des valeurs aléatoires
     grille = [[random.randint(0, 1) for _ in range(taille_grille)] for _ in range(taille_grille)]
 
     queue_entree = mp.Queue()
     queue_sortie = mp.Queue()
 
-    queue_entree.put(grille)
+    queue_entree.put(grille) # On met la grille initiale dans la queue
 
     process = mp.Process(target=evolution, args=(queue_entree, queue_sortie))
     process.start()
@@ -132,11 +134,11 @@ if __name__ == '__main__':
 
     try:
         while True:
-            iteration, nouvelle_grille = queue_sortie.get(timeout=2) 
-            afficher_grille(iteration, nouvelle_grille)
-            queue_entree.put(nouvelle_grille)
+            iteration, nouvelle_grille = queue_sortie.get(timeout=2) # On récupère la grille
+            afficher_grille(iteration, nouvelle_grille) # On l'affiche
+            queue_entree.put(nouvelle_grille) # Et on la met dans la queue pour faire la suivante
             time.sleep(1)
     except KeyboardInterrupt:
-        process.terminate()
+        process.terminate() # Arrête proprement le processus en cas d'interruption CTRL+C
 
     curseur_visible()
